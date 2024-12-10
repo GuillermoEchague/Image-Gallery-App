@@ -27,21 +27,30 @@ struct WelcomeView: View {
                 .edgesIgnoringSafeArea(.all)
                 
                 VStack(spacing: 30) {
+                    // Título con efecto pulsante
                     Text("Galería de Imágenes")
                         .font(.system(size: 36, weight: .bold))
                         .foregroundColor(.white)
                         .scaleEffect(animationAmount)
+                        .animation(
+                            Animation.easeInOut(duration: 1.5)
+                                .repeatForever(autoreverses: true),
+                            value: animationAmount
+                        )
                     
+                    // Imagen con rotación 3D animada
                     Image(systemName: "photo.stack")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 150, height: 150)
                         .foregroundColor(.white)
                         .rotation3DEffect(
-                            .degrees(Double(animationAmount - 1) * 20),
+                            .degrees(Double(animationAmount - 1) * 80),
                             axis: (x: 1.0, y: 0.0, z: 0.0)
                         )
+                        .animation(.easeInOut(duration: 1), value: animationAmount)
                     
+                    // Campo de texto
                     TextField("Ingresa tu nombre", text: $username)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding()
@@ -51,7 +60,9 @@ struct WelcomeView: View {
                             RoundedRectangle(cornerRadius: 10)
                                 .stroke(showError ? Color.red : Color.clear, lineWidth: 2)
                         )
+                        .animation(.easeInOut, value: showError)
                     
+                    // Botón de navegación
                     NavigationLink(destination: ImageListView(username: username)) {
                         Text("Comenzar")
                             .foregroundColor(.white)
@@ -62,13 +73,13 @@ struct WelcomeView: View {
                     .disabled(username.isEmpty)
                     .simultaneousGesture(TapGesture().onEnded {
                         if username.isEmpty {
-                            withAnimation {
+                            withAnimation(.easeInOut(duration: 0.5)) {
                                 showError = true
-                                animationAmount += 0.5
+                                animationAmount += 0.2 // Breve efecto de "rebote"
                             }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                                 showError = false
-                                animationAmount = 1.0
+                                animationAmount = 1.1
                             }
                         } else {
                             lastUsername = username
@@ -79,9 +90,8 @@ struct WelcomeView: View {
                 .padding()
             }
             .onAppear {
-                withAnimation(Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-                    animationAmount = 1.1
-                }
+                // Animación inicial
+                animationAmount = 1.1
             }
         }
     }
